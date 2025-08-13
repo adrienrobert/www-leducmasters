@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "prisma generate && vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -18,7 +18,8 @@
 		"db:seed": "npx tsx prisma/seed.ts",
 		"db:reset": "npx prisma db push --force-reset && npm run db:seed",
 		"db:generate": "npx prisma generate",
-		"db:studio": "npx prisma studio"
+		"db:studio": "npx prisma studio",
+        "postinstall": "prisma generate"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
