@@ -108,7 +108,7 @@
 	<!-- Header -->
 	<header class="mb-6">
 		<h1 class="text-2xl font-bold text-gray-900 mb-2">Leduc Masters</h1>
-		<p class="text-gray-600">Gérez vos tournois en double élimination</p>
+		<p class="text-gray-600">Tournois en double élimination</p>
 	</header>
 
 	<!-- Liste des tournois -->
