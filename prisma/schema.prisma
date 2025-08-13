@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum TournamentStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+}
+
+enum MatchBracket {
+  MAIN
+  LOSER
+  PLAYOFF
+  GRAND_FINAL
+}
+
+enum MatchSlot {
+  A
+  B
+}
+
+model Player {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  tournaments   TournamentPlayer[]
+  matchesAsA    Match[]            @relation("MatchPlayerA")
+  matchesAsB    Match[]            @relation("MatchPlayerB")
+  matchesWon    Match[]            @relation("MatchWinner")
+  matchesLost   Match[]            @relation("MatchLoser")
+  tournamentsWon Tournament[]      @relation("TournamentWinner")
+}
+
+model Tournament {
+  id        String           @id @default(cuid())
+  title     String
+  location  String?
+  date      DateTime
+  status    TournamentStatus @default(DRAFT)
+  winnerId  String?
+  createdAt DateTime         @default(now())
+
+  winner      Player?            @relation("TournamentWinner", fields: [winnerId], references: [id])
+  players     TournamentPlayer[]
+  matches     Match[]
+}
+
+model TournamentPlayer {
+  id           String @id @default(cuid())
+  tournamentId String
+  playerId     String
+  seed         Int
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  player     Player     @relation(fields: [playerId], references: [id])
+
+  @@unique([tournamentId, playerId])
+  @@unique([tournamentId, seed])
+}
+
+model Match {
+  id            String       @id @default(cuid())
+  tournamentId  String
+  roundNumber   Int
+  bracket       MatchBracket
+  slotInRound   Int
+  playerAId     String?
+  playerBId     String?
+  scoreA        Int?
+  scoreB        Int?
+  winnerId      String?
+  loserId       String?
+  nextMatchId   String?
+  nextMatchSlot MatchSlot?
+  locked        Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  playerA    Player?    @relation("MatchPlayerA", fields: [playerAId], references: [id])
+  playerB    Player?    @relation("MatchPlayerB", fields: [playerBId], references: [id])
+  winner     Player?    @relation("MatchWinner", fields: [winnerId], references: [id])
+  loser      Player?    @relation("MatchLoser", fields: [loserId], references: [id])
+
+  @@index([tournamentId, bracket, roundNumber, slotInRound])
+}
