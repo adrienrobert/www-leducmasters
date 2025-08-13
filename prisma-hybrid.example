@@ -1,0 +1,16 @@
+// Configuration Prisma hybride (SQLite dev + PostgreSQL prod)
+// Remplacez le contenu de prisma/schema.prisma par ceci :
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Pour basculer en production, changez provider vers "postgresql"
+// et mettez à jour DATABASE_URL sur Vercel
+
+// Modèles inchangés...
